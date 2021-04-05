@@ -1,6 +1,6 @@
 import krakenex
-import json
-from models.kraken import *
+import json, random
+from services.kraken import *
 
 krakenApi = krakenex.API()
 
@@ -24,9 +24,15 @@ for a in assets:
         raise Exception('key and alternative key are not part of the dictionary')
     currentPrice = assetData['c'][0]
     print(f'{a.key} = {currentPrice} in {a.currency}')
-    a.currentPrice = currentPrice
+    a.currentPrice = float(currentPrice)
 
-balance = 100
+budget = getBudget()
+has = hasEnough(budget, assets)
+if not hasEnough:
+    raise Exception('Not enough budget for next buy $___$')
+
+availableAssets = getAffordable(budget, assets)
+pickedAsset = random.choice(availableAssets)
 
 #Auth to kraken
 # krakenApi.load_key('kraken.key')

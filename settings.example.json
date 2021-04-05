@@ -1,5 +1,9 @@
 {
     "ToBuy": [
-        { "currency": "...", "min": 0.01 }
+        {
+            "crypto": "xbt",
+            "currency": "eur",
+            "min": 1000
+        }
     ]
 }
