@@ -25,9 +25,10 @@ class KrakenHelper:
         self.api.load_key('kraken.key')
 
     def getBudget(self):
+        balance = self.api.query_private('Balance')
         return 100 #to be implemented
 
-    def hasEnough(self, budget, assets) -> bool:
+    def hasEnough(self, budget, assets):
         return budget > min(map(lambda a: a.getPriceForAsset(), filter(lambda a: a is not None, assets)))
 
     def getAffordable(self, budget, assets):
@@ -49,6 +50,9 @@ class KrakenHelper:
             print(f'{a.key} = {currentPrice} in {a.currency}')
             a.currentPrice = float(currentPrice)
         return assets
+    
+    def makeOrder(self, krakenOrder):
+        result = self.api.query_private("MakeOrder", krakenOrder)
 
 class KrakenOrder:
     def __init__(self, pair, amount):

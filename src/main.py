@@ -1,6 +1,6 @@
 import krakenex
 import json, random
-from services.kraken import KrakenHelper, json2Assets
+from services.kraken import KrakenHelper, json2Assets, KrakenOrder
 
 krakenHelper = KrakenHelper()
 
@@ -18,12 +18,14 @@ if not availableFunds:
 
 availableAssets = krakenHelper.getAffordable(budget, assets)
 pickedAsset = random.choice(availableAssets)
+order = KrakenOrder(pickedAsset.pair, pickedAsset.min)
 
 buyFor = pickedAsset.getPriceForAsset()
 
 budgetAfterOrder = budget - pickedAsset.getPriceForAsset()
 enoughForNextBuy = krakenHelper.hasEnough(budgetAfterOrder, availableAssets)
+
 if not enoughForNextBuy:
-    buyFor = budget
-    
-#Perform orders
+    order.amount = budget / pickedAsset.currentPrice
+
+# krakenHelper.makeOrder(order)
