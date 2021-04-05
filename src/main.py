@@ -1,12 +1,10 @@
-import requests
+import krakenex
 
-response = requests.get("https://api.kraken.com/0/public/Ticker?pair=BTCEUR")
-print(response.json())
 #Define which crypto to buy
 
 #Auth to kraken
+krakenApi = krakenex.API()
+krakenApi.load_key('kraken.key')
 
 #Perform orders
-
-#Close self
 
