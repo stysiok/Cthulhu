@@ -131,3 +131,4 @@ dmypy.json
 # Custom
 kraken.key
 settings.json
+.vscode/launch.json
