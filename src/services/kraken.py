@@ -1,4 +1,4 @@
-import json
+import json, krakenex
 
 class Asset:
     currentPrice = None
@@ -9,7 +9,7 @@ class Asset:
         self.altKey = 'X' + self.crypto + 'Z' + self.currency
         self.min = min
     
-    def getMinPrice(self):
+    def getPriceForAsset(self):
         return self.currentPrice * self.min
 
 def json2Assets(jsonObj): 
@@ -19,11 +19,40 @@ def json2Assets(jsonObj):
         arr.append(asset)
     return arr
 
-def getBudget():
-    return 100 #to be implemented
+class KrakenHelper:
+    api = krakenex.API()
+    def __init__(self):
+        self.api.load_key('kraken.key')
 
-def hasEnough(budget, assets) -> bool:
-    return budget > min(map(lambda a: a.getMinPrice(), filter(lambda a: a is not None, assets)))
+    def getBudget(self):
+        return 100 #to be implemented
 
-def getAffordable(budget, assets):
-    return list(filter(lambda a: a.getMinPrice() < budget, assets))
+    def hasEnough(self, budget, assets) -> bool:
+        return budget > min(map(lambda a: a.getPriceForAsset(), filter(lambda a: a is not None, assets)))
+
+    def getAffordable(self, budget, assets):
+        return list(filter(lambda a: a.getPriceForAsset() < budget, assets))
+
+    def updateCurrentPrices(self, assets):
+        tickerPairs = ','.join(map(lambda x: x.key, assets))
+        print(tickerPairs)
+        result = self.api.query_public(f'Ticker?pair={tickerPairs}')['result']
+        for a in assets:
+            assetData = ''
+            if a.key in result:
+                assetData = result[a.key]
+            elif a.altKey in result:
+                assetData = result[a.altKey]
+            else:
+                break
+            currentPrice = assetData['c'][0]
+            print(f'{a.key} = {currentPrice} in {a.currency}')
+            a.currentPrice = float(currentPrice)
+        return assets
+
+class KrakenOrder:
+    def __init__(self, pair, amount):
+        self.pair = pair
+        self.amount = amount
+        self.type = 'buy'
+        self.order = 'market'
