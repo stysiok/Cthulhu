@@ -25,8 +25,7 @@ class KrakenHelper:
         self.api.load_key('kraken.key')
 
     def getBudget(self):
-        balance = self.api.query_private('Balance')
-        return 100 #to be implemented
+        return self.api.query_private('Balance')['result']['ZEUR']
 
     def hasEnough(self, budget, assets):
         return budget > min(map(lambda a: a.getPriceForAsset(), filter(lambda a: a is not None, assets)))
@@ -36,7 +35,6 @@ class KrakenHelper:
 
     def updateCurrentPrices(self, assets):
         tickerPairs = ','.join(map(lambda x: x.key, assets))
-        print(tickerPairs)
         result = self.api.query_public(f'Ticker?pair={tickerPairs}')['result']
         for a in assets:
             assetData = ''

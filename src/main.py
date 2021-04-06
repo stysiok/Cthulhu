@@ -14,7 +14,8 @@ assets = krakenHelper.updateCurrentPrices(assets)
 budget = krakenHelper.getBudget()
 availableFunds = krakenHelper.hasEnough(budget, assets)
 if not availableFunds:
-    raise Exception('Not enough budget for next buy $___$')
+    print('Not enough budget for next buy $___$')
+    exit()
 
 availableAssets = krakenHelper.getAffordable(budget, assets)
 pickedAsset = random.choice(availableAssets)
