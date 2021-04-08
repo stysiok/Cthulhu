@@ -1,0 +1,11 @@
+src/services/__pychache__/*
+scripts/*
+!scripts/run.dev
+.vscode/*
+tests/*
+.gitignore
+Dockerfile
+kraken.example.key
+LICENSE
+README.md
+settings.example.json

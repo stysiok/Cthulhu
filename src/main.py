@@ -1,11 +1,11 @@
-import krakenex
-import json, random
+import json, random, os
 from services.kraken import KrakenHelper, json2Assets, KrakenOrder
 
 krakenHelper = KrakenHelper()
+settingsPath = 'settings.json' if os.getenv('SETTINGS_PATH') == '' else os.getenv('SETTINGS_PATH')
 
 jsonObj = ''
-with open('settings.json') as json_file:
+with open(settingsPath) as json_file:
     jsonObj = json.load(json_file)
 assets = json2Assets(jsonObj['ToBuy'])
 
@@ -19,7 +19,7 @@ if not availableFunds:
 
 availableAssets = krakenHelper.getAffordable(budget, assets)
 pickedAsset = random.choice(availableAssets)
-order = KrakenOrder(pickedAsset.pair, pickedAsset.min)
+order = KrakenOrder(pickedAsset.key, pickedAsset.min)
 
 buyFor = pickedAsset.getPriceForAsset()
 
@@ -30,3 +30,4 @@ if not enoughForNextBuy:
     order.amount = budget / pickedAsset.currentPrice
 
 # krakenHelper.makeOrder(order)
+print('done!')

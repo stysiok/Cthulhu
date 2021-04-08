@@ -1,4 +1,5 @@
-import json, krakenex
+import krakenex
+import json, os
 
 class Asset:
     currentPrice = None
@@ -20,12 +21,13 @@ def json2Assets(jsonObj):
     return arr
 
 class KrakenHelper:
+    krakenPath = 'kraken.key' if os.getenv('KRAKEN_KEY_PATH') == '' else os.getenv('KRAKEN_KEY_PATH')
     api = krakenex.API()
     def __init__(self):
-        self.api.load_key('kraken.key')
+        self.api.load_key(self.krakenPath)
 
     def getBudget(self):
-        return self.api.query_private('Balance')['result']['ZEUR']
+        return float(self.api.query_private('Balance')['result']['ZEUR'])
 
     def hasEnough(self, budget, assets):
         return budget > min(map(lambda a: a.getPriceForAsset(), filter(lambda a: a is not None, assets)))
