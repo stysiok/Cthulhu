@@ -1,6 +1,5 @@
 src/services/__pychache__/*
-scripts/*
-!scripts/run.dev
+scripts/run_dev.sh
 .vscode/*
 tests/*
 .gitignore

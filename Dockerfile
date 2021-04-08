@@ -2,12 +2,14 @@ FROM python:3.9.4-alpine3.12 AS python
 
 WORKDIR /app
 COPY . .
+COPY scripts/run.sh scripts/run
 
-ENV KRAKEN_KEY_PATH='/app/kraken.key' \
-    SETTINGS_PATH='/app/settings.json'
+ENV KRAKEN_KEY_PATH='/app/kraken.key' 
+ENV SETTINGS_PATH='/app/settings.json'
 
-RUN sh scripts/requirements.sh \
-    chmod +x scripts/run.sh \
-    echo '*/1 * * * * sh /app/scripts/run.sh' > /etc/crontabs/root 
+RUN sh scripts/requirements.sh 
+RUN chmod +x scripts/run 
 
-CMD crond -l 2 -f
+RUN echo '*/1 * * * * /app/scripts/run' > /etc/crontabs/root 
+
+CMD crond -l 3 -f 
