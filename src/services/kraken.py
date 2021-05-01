@@ -21,7 +21,7 @@ def json2Assets(jsonObj):
     return arr
 
 class KrakenHelper:
-    krakenPath = 'kraken.key' if os.getenv('KRAKEN_KEY_PATH') == '' else os.getenv('KRAKEN_KEY_PATH')
+    krakenPath = 'kraken.key' if os.getenv('KRAKEN_KEY_PATH') == None else os.getenv('KRAKEN_KEY_PATH')
     api = krakenex.API()
     def __init__(self):
         self.api.load_key(self.krakenPath)
@@ -51,10 +51,16 @@ class KrakenHelper:
             a.currentPrice = float(currentPrice)
         return assets
     
-    def makeOrder(self, krakenOrder):
-        result = self.api.query_private("MakeOrder", krakenOrder)
+    def addOrder(self, pair, amount):
+        order = { 
+            'pair': pair,
+            'volume': amount,
+            'type': 'buy',
+            'ordertype': 'market'
+        }
+        result = self.api.query_private("AddOrder", order)
 
-class KrakenOrder:
+class KrakenOrder():
     def __init__(self, pair, amount):
         self.pair = pair
         self.amount = amount
