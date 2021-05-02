@@ -10,6 +10,6 @@ ENV SETTINGS_PATH='/app/settings.json'
 RUN sh scripts/requirements.sh 
 RUN chmod +x scripts/run 
 
-RUN echo '*/1 * * * * /app/scripts/run' > /etc/crontabs/root 
+RUN echo '0 16 * * * /app/scripts/run' > /etc/crontabs/root 
 
 CMD crond -l 3 -f 
