@@ -2,7 +2,6 @@
     "ToBuy": [
         {
             "crypto": "xbt",
-            "currency": "eur",
             "min": 1000
         }
     ]

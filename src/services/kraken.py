@@ -3,11 +3,12 @@ import json, os
 
 class Asset:
     currentPrice = None
-    def __init__(self, crypto, currency, min):
-        self.currency = str.upper(currency)
+    def __init__(self, crypto, min):
+        self.currency = str.upper('eur')
         self.crypto = str.upper(crypto)
         self.key = self.crypto + self.currency
         self.altKey = 'X' + self.crypto + 'Z' + self.currency
+        self.leadingKey = ''
         self.min = min
     
     def getPriceForAsset(self):
@@ -16,7 +17,7 @@ class Asset:
 def json2Assets(jsonObj): 
     arr = []
     for v in jsonObj:
-        asset = Asset(v['crypto'], v['currency'], v['min'])
+        asset = Asset(v['crypto'], v['min'])
         arr.append(asset)
     return arr
 
@@ -42,27 +43,25 @@ class KrakenHelper:
             assetData = ''
             if a.key in result:
                 assetData = result[a.key]
+                a.leadingKey = a.key
             elif a.altKey in result:
                 assetData = result[a.altKey]
+                a.leadingKey = a.altKey
             else:
+                print(f'key for {a.crypto} not found. Looked for: ({a.key}, {a.altKey}).')
                 break
             currentPrice = assetData['c'][0]
-            print(f'{a.key} = {currentPrice} in {a.currency}')
+            print(f'{a.leadingKey} = {currentPrice} in {a.currency}')
             a.currentPrice = float(currentPrice)
         return assets
     
-    def addOrder(self, pair, amount):
+    def addOrder(self, key, amount):
         order = { 
-            'pair': pair,
+            'pair': key,
             'volume': amount,
             'type': 'buy',
             'ordertype': 'market'
         }
-        result = self.api.query_private("AddOrder", order)
+        result = self.api.query_private("AddOrder", order)['result']['descr']['order']
+        print(f'Result from Kraken: {result}')
 
-class KrakenOrder():
-    def __init__(self, pair, amount):
-        self.pair = pair
-        self.amount = amount
-        self.type = 'buy'
-        self.order = 'market'
