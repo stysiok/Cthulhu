@@ -1,5 +1,5 @@
 import json, random, os
-from services.kraken import KrakenHelper, json2Assets, KrakenOrder
+from services.kraken import KrakenHelper, json2Assets
 
 krakenHelper = KrakenHelper()
 settingsPath = 'settings.json' if os.getenv('SETTINGS_PATH') == None else os.getenv('SETTINGS_PATH')
