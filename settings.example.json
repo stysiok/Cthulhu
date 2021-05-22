@@ -1,8 +1,3 @@
 {
-    "ToBuy": [
-        {
-            "crypto": "xbt",
-            "min": 1000
-        }
-    ]
+    "Coins": [ "eth", "xbt", "doge"]
 }
