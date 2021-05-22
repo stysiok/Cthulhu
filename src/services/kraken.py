@@ -15,27 +15,6 @@ class Asset:
 
 
 
-def getAssets(cryptoNames):
-    krakenHelper = KrakenHelper()
-    assets = list(map(lambda a: Asset(a), cryptoNames))
-    currentPrices = krakenHelper.getCurrentPrices(assets)
-    minOrders = krakenHelper.getMinBuys(assets)
-    for a in assets:
-        altKey = 'X' + a.crypto + 'Z' + a.currency
-        if a.key in currentPrices:
-            break
-        elif altKey in currentPrices:
-            a.key = altKey
-        else:
-            print(f'key for {a.crypto} not found. Looked for: ({a.key}, {altKey}).')
-            break
-        a.currentPrice = float(currentPrices[a.key]['c'][0])
-        a.orderMin = float(minOrders[a.key]['ordermin'])
-        print(f'{a.key} = {a.currentPrice} in {a.currency}')
-    return assets
-
-
-
 class KrakenHelper:
     krakenPath = 'kraken.key' if os.getenv('KRAKEN_KEY_PATH') == None else os.getenv('KRAKEN_KEY_PATH')
     api = krakenex.API()
@@ -73,3 +52,23 @@ class KrakenHelper:
 
     def __assetsToPair(self, assets: Iterable[Asset]) -> str:
         return ','.join(map(lambda x: x.key, assets))
+
+
+
+def getAssets(cryptoNames: Iterable[str], helper: KrakenHelper) -> Iterable[Asset]:
+    assets = list(map(lambda a: Asset(a), cryptoNames))
+    currentPrices = helper.getCurrentPrices(assets)
+    minOrders = helper.getMinBuys(assets)
+    for a in assets:
+        altKey = 'X' + a.crypto + 'Z' + a.currency
+        if a.key in currentPrices:
+            break
+        elif altKey in currentPrices:
+            a.key = altKey
+        else:
+            print(f'key for {a.crypto} not found. Looked for: ({a.key}, {altKey}).')
+            break
+        a.currentPrice = float(currentPrices[a.key]['c'][0])
+        a.orderMin = float(minOrders[a.key]['ordermin'])
+        print(f'{a.key} = {a.currentPrice} in {a.currency}')
+    return assets

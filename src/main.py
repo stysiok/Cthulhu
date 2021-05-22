@@ -7,7 +7,7 @@ settingsPath = 'settings.json' if os.getenv('SETTINGS_PATH') == None else os.get
 coins = ''
 with open(settingsPath) as json_file:
     coins = json.load(json_file)["Coins"]
-assets = getAssets(coins)
+assets = getAssets(coins, krakenHelper)
 
 budget = krakenHelper.getBudget()
 print(f'Your current budget is {budget}€')
