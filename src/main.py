@@ -24,6 +24,6 @@ budgetAfterOrder = budget - buyFor
 
 print(f'Picked {pickedAsset.crypto} with min: {pickedAsset.orderMin}')
 
-krakenHelper.addOrder(pickedAsset.leadingKey, pickedAsset.orderMin)
+krakenHelper.addOrder(pickedAsset.key, pickedAsset.orderMin)
 print(f'Bought for {buyFor}, remaining budget {budgetAfterOrder}')
 print('Successfully bought some crypto today!')

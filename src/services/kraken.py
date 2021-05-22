@@ -1,4 +1,4 @@
-from typing import Sequence
+from typing import Iterable, Sequence
 import krakenex
 import os
 
@@ -10,7 +10,7 @@ class Asset:
         self.crypto = str.upper(crypto)
         self.key = self.crypto + self.currency
     
-    def getPrice(self):
+    def getPrice(self) -> float: 
         return self.currentPrice * self.orderMin
 
 
@@ -27,7 +27,7 @@ def getAssets(cryptoNames):
         elif altKey in currentPrices:
             a.key = altKey
         else:
-            print(f'key for {a.crypto} not found. Looked for: ({key}, {altKey}).')
+            print(f'key for {a.crypto} not found. Looked for: ({a.key}, {altKey}).')
             break
         a.currentPrice = float(currentPrices[a.key]['c'][0])
         a.orderMin = float(minOrders[a.key]['ordermin'])
@@ -45,23 +45,23 @@ class KrakenHelper:
     def getBudget(self):
         return float(self.api.query_private('Balance')['result']['ZEUR'])
 
-    def hasEnough(self, budget, assets):
+    def hasEnough(self, budget: float, assets: Iterable[Asset]) -> bool: 
         return budget > min(map(lambda a: a.getPrice(), filter(lambda a: a is not None, assets)))
 
-    def getAffordable(self, budget, assets) -> Sequence[Asset]:
+    def getAffordable(self, budget: float, assets: Iterable[Asset]) -> Sequence[Asset]:
         return list(filter(lambda a: a.getPrice() < budget, assets))
     
-    def getMinBuys(self, assets):
+    def getMinBuys(self, assets: Iterable[Asset]):
         pairs = self.__assetsToPair(assets)
         result = self.api.query_public(f'AssetPairs?pair={pairs}')['result']
         return result
 
-    def getCurrentPrices(self, assets):
+    def getCurrentPrices(self, assets: Iterable[Asset]):
         tickerPairs = self.__assetsToPair(assets)
         result = self.api.query_public(f'Ticker?pair={tickerPairs}')['result']
         return result
     
-    def addOrder(self, key, amount):
+    def addOrder(self, key: str, amount: float) -> None:
         order = { 
             'pair': key,
             'volume': amount,
@@ -71,5 +71,5 @@ class KrakenHelper:
         result = self.api.query_private("AddOrder", order)['result']['descr']['order']
         print(f'Result from Kraken: {result}')
 
-    def __assetsToPair(self, assets):
+    def __assetsToPair(self, assets: Iterable[Asset]) -> str:
         return ','.join(map(lambda x: x.key, assets))
