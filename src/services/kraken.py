@@ -1,36 +1,38 @@
+from typing import Sequence
 import krakenex
 import os
 
 class Asset:
     currentPrice = None
-    key = None
-    ordermin = None
+    orderMin = None
     def __init__(self, crypto):
         self.currency = str.upper('eur')
         self.crypto = str.upper(crypto)
+        self.key = self.crypto + self.currency
     
-    def getPriceForMinAsset(self):
-        return self.currentPrice * self.min
+    def getPrice(self):
+        return self.currentPrice * self.orderMin
 
-    def getAssets(cryptoNames):
-        krakenHelper = KrakenHelper()
-        assets = list(map(lambda a: Asset(a), cryptoNames))
-        currentPrices = krakenHelper.getCurrentPrices(assets)
-        minOrders = krakenHelper.getMinBuys(assets)
-        for a in assets:
-            key = a.crypto + a.currency
-            altKey = 'X' + a.crypto + 'Z' + a.currency
-            if key in currentPrices:
-                a.key = key
-            elif altKey in currentPrices:
-                a.key = altKey
-            else:
-                print(f'key for {a.crypto} not found. Looked for: ({key}, {altKey}).')
-                break
-            a.currentPrice = float(currentPrices[a.key]['c'][0])
-            a.ordermin = float(minOrders[a.key]['ordermin'])
-            print(f'{a.key} = {a.currentPrice} in {a.currency}')
-        return assets
+
+
+def getAssets(cryptoNames):
+    krakenHelper = KrakenHelper()
+    assets = list(map(lambda a: Asset(a), cryptoNames))
+    currentPrices = krakenHelper.getCurrentPrices(assets)
+    minOrders = krakenHelper.getMinBuys(assets)
+    for a in assets:
+        altKey = 'X' + a.crypto + 'Z' + a.currency
+        if a.key in currentPrices:
+            break
+        elif altKey in currentPrices:
+            a.key = altKey
+        else:
+            print(f'key for {a.crypto} not found. Looked for: ({key}, {altKey}).')
+            break
+        a.currentPrice = float(currentPrices[a.key]['c'][0])
+        a.orderMin = float(minOrders[a.key]['ordermin'])
+        print(f'{a.key} = {a.currentPrice} in {a.currency}')
+    return assets
 
 
 
@@ -44,10 +46,10 @@ class KrakenHelper:
         return float(self.api.query_private('Balance')['result']['ZEUR'])
 
     def hasEnough(self, budget, assets):
-        return budget > min(map(lambda a: a.getPriceForAsset(), filter(lambda a: a is not None, assets)))
+        return budget > min(map(lambda a: a.getPrice(), filter(lambda a: a is not None, assets)))
 
-    def getAffordable(self, budget, assets):
-        return list(filter(lambda a: a.getPriceForAsset() < budget, assets))
+    def getAffordable(self, budget, assets) -> Sequence[Asset]:
+        return list(filter(lambda a: a.getPrice() < budget, assets))
     
     def getMinBuys(self, assets):
         pairs = self.__assetsToPair(assets)

@@ -1,15 +1,13 @@
 import json, random, os
-from services.kraken import KrakenHelper, json2Assets
+from src.services.kraken import getAssets, KrakenHelper
 
 krakenHelper = KrakenHelper()
 settingsPath = 'settings.json' if os.getenv('SETTINGS_PATH') == None else os.getenv('SETTINGS_PATH')
 
-jsonObj = ''
+coins = ''
 with open(settingsPath) as json_file:
-    jsonObj = json.load(json_file)
-assets = json2Assets(jsonObj['ToBuy'])
-
-assets = krakenHelper.updateCurrentPrices(assets)
+    coins = json.load(json_file)["Coins"]
+assets = getAssets(coins)
 
 budget = krakenHelper.getBudget()
 print(f'Your current budget is {budget}€')
@@ -21,16 +19,11 @@ if not availableFunds:
 availableAssets = krakenHelper.getAffordable(budget, assets)
 pickedAsset = random.choice(availableAssets)
 
-buyFor = pickedAsset.getPriceForAsset()
-
+buyFor = pickedAsset.getPrice()
 budgetAfterOrder = budget - buyFor
-enoughForNextBuy = krakenHelper.hasEnough(budgetAfterOrder, availableAssets)
 
-amount = pickedAsset.min
-if not enoughForNextBuy:
-    amount = budget / pickedAsset.currentPrice
+print(f'Picked {pickedAsset.crypto} with min: {pickedAsset.orderMin}')
 
-print(f'Picked {amount} {pickedAsset.leadingKey}')
-
-krakenHelper.addOrder(pickedAsset.leadingKey, amount)
+krakenHelper.addOrder(pickedAsset.leadingKey, pickedAsset.orderMin)
+print(f'Bought for {buyFor}, remaining budget {budgetAfterOrder}')
 print('Successfully bought some crypto today!')
