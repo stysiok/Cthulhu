@@ -1,25 +1,38 @@
 import krakenex
-import json, os
+import os
 
 class Asset:
     currentPrice = None
-    def __init__(self, crypto, min):
+    key = None
+    ordermin = None
+    def __init__(self, crypto):
         self.currency = str.upper('eur')
         self.crypto = str.upper(crypto)
-        self.key = self.crypto + self.currency
-        self.altKey = 'X' + self.crypto + 'Z' + self.currency
-        self.leadingKey = ''
-        self.min = min
     
-    def getPriceForAsset(self):
+    def getPriceForMinAsset(self):
         return self.currentPrice * self.min
 
-def json2Assets(jsonObj): 
-    arr = []
-    for v in jsonObj:
-        asset = Asset(v['crypto'], v['min'])
-        arr.append(asset)
-    return arr
+    def getAssets(cryptoNames):
+        krakenHelper = KrakenHelper()
+        assets = list(map(lambda a: Asset(a), cryptoNames))
+        currentPrices = krakenHelper.getCurrentPrices(assets)
+        minOrders = krakenHelper.getMinBuys(assets)
+        for a in assets:
+            key = a.crypto + a.currency
+            altKey = 'X' + a.crypto + 'Z' + a.currency
+            if key in currentPrices:
+                a.key = key
+            elif altKey in currentPrices:
+                a.key = altKey
+            else:
+                print(f'key for {a.crypto} not found. Looked for: ({key}, {altKey}).')
+                break
+            a.currentPrice = float(currentPrices[a.key]['c'][0])
+            a.ordermin = float(minOrders[a.key]['ordermin'])
+            print(f'{a.key} = {a.currentPrice} in {a.currency}')
+        return assets
+
+
 
 class KrakenHelper:
     krakenPath = 'kraken.key' if os.getenv('KRAKEN_KEY_PATH') == None else os.getenv('KRAKEN_KEY_PATH')
@@ -35,25 +48,16 @@ class KrakenHelper:
 
     def getAffordable(self, budget, assets):
         return list(filter(lambda a: a.getPriceForAsset() < budget, assets))
+    
+    def getMinBuys(self, assets):
+        pairs = self.__assetsToPair(assets)
+        result = self.api.query_public(f'AssetPairs?pair={pairs}')['result']
+        return result
 
-    def updateCurrentPrices(self, assets):
-        tickerPairs = ','.join(map(lambda x: x.key, assets))
+    def getCurrentPrices(self, assets):
+        tickerPairs = self.__assetsToPair(assets)
         result = self.api.query_public(f'Ticker?pair={tickerPairs}')['result']
-        for a in assets:
-            assetData = ''
-            if a.key in result:
-                assetData = result[a.key]
-                a.leadingKey = a.key
-            elif a.altKey in result:
-                assetData = result[a.altKey]
-                a.leadingKey = a.altKey
-            else:
-                print(f'key for {a.crypto} not found. Looked for: ({a.key}, {a.altKey}).')
-                break
-            currentPrice = assetData['c'][0]
-            print(f'{a.leadingKey} = {currentPrice} in {a.currency}')
-            a.currentPrice = float(currentPrice)
-        return assets
+        return result
     
     def addOrder(self, key, amount):
         order = { 
@@ -65,3 +69,5 @@ class KrakenHelper:
         result = self.api.query_private("AddOrder", order)['result']['descr']['order']
         print(f'Result from Kraken: {result}')
 
+    def __assetsToPair(self, assets):
+        return ','.join(map(lambda x: x.key, assets))
