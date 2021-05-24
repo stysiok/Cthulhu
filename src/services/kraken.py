@@ -61,13 +61,12 @@ def getAssets(cryptoNames: Iterable[str], helper: KrakenHelper) -> Iterable[Asse
     minOrders = helper.getMinBuys(assets)
     for a in assets:
         altKey = 'X' + a.crypto + 'Z' + a.currency
-        if a.key in currentPrices:
-            break
+        if a.key not in currentPrices and altKey not in currentPrices:
+            print(f'key for {a.crypto} not found. Looked for: ({a.key}, {altKey}).')
+            assets.remove(a)
+            continue
         elif altKey in currentPrices:
             a.key = altKey
-        else:
-            print(f'key for {a.crypto} not found. Looked for: ({a.key}, {altKey}).')
-            break
         a.currentPrice = float(currentPrices[a.key]['c'][0])
         a.orderMin = float(minOrders[a.key]['ordermin'])
         print(f'{a.key} = {a.currentPrice} in {a.currency}')
