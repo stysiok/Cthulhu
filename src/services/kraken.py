@@ -55,7 +55,7 @@ class KrakenHelper:
 
 
 
-def getAssets(cryptoNames: Iterable[str], helper: KrakenHelper) -> Iterable[Asset]:
+def getAssets(cryptoNames: Iterable[str], helper: KrakenHelper) -> Sequence[Asset]:
     assets = list(map(lambda a: Asset(a), cryptoNames))
     currentPrices = helper.getCurrentPrices(assets)
     minOrders = helper.getMinBuys(assets)
