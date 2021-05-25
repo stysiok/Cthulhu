@@ -25,7 +25,7 @@ class KrakenHelper:
         return float(self.api.query_private('Balance')['result']['ZEUR'])
 
     def hasEnough(self, budget: float, assets: Iterable[Asset]) -> bool: 
-        return budget > min(map(lambda a: a.getPrice(), filter(lambda a: a is not None, assets)))
+        return budget > min(map(lambda a: a.getPrice(), assets))
 
     def getAffordable(self, budget: float, assets: Iterable[Asset]) -> Sequence[Asset]:
         return list(filter(lambda a: a.getPrice() < budget, assets))
