@@ -6,7 +6,7 @@ from src.services.kraken import KrakenHelper, getAssets, Asset
 
 class TestAsset(unittest.TestCase):
     def test_Asset_getAssets(self):
-        cryptos = ['xbt', 'doge', 'randomkey']
+        cryptos = ['xbt', 'randomkey', 'doge']
         getMinBuysReturn = { "XXBTZEUR": { "ordermin": 0.0001 }, "DOGEEUR": { "ordermin": 50 }}
         getCurrentPricesReturn = { "XXBTZEUR": { "c": [ 34000 ] }, "DOGEEUR": { "c": [ 0.3123 ] }}
         krakenHelperMock = KrakenHelper()
