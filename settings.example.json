@@ -1,3 +1,4 @@
 {
-    "Coins": [ "eth", "xbt", "doge"]
+    "Coins": [ "eth", "xbt", "doge"],
+    "TelegramChatId": 99999
 }
