@@ -1,5 +1,6 @@
 import json, random, os
 from services.kraken import getAssets, KrakenHelper
+from services.telegram import boughtCoinNotification
 
 krakenHelper = KrakenHelper()
 settingsPath = 'settings.json' if os.getenv('SETTINGS_PATH') == None else os.getenv('SETTINGS_PATH')
@@ -27,3 +28,7 @@ print(f'Picked {pickedAsset.crypto} with min: {pickedAsset.orderMin}')
 krakenHelper.addOrder(pickedAsset.key, pickedAsset.orderMin)
 print(f'Bought for {buyFor}, remaining budget {budgetAfterOrder}')
 print('Successfully bought some crypto today!')
+
+print('Notifying on Telegram...')
+boughtCoinNotification(pickedAsset)
+print('Done!!!')

@@ -1,16 +1,33 @@
-import os, re, datetime
-import telebot, json
+import os, re, datetime, json
+import telebot
+from telebot import apihelper
 from kraken import KrakenHelper, Asset, getAssets
 
 telegramKeyPath = 'telegram.key' if os.getenv('TELEGRAM_KEY_PATH') == None else os.getenv('TELEGRAM_KEY_PATH')
 settingsPath = 'settings.json' if os.getenv('SETTINGS_PATH') == None else os.getenv('SETTINGS_PATH')
+
+chatId = ''
+with open(settingsPath) as json_file:
+    chatId = json.load(json_file)['TelegramChatId']
+
 helper = KrakenHelper()
 
 token = ''
 with open(telegramKeyPath) as telegramFile:
     token = telegramFile.read()
 
+apihelper.ENABLE_MIDDLEWARE = True
 bot = telebot.TeleBot(token, parse_mode=None)
+
+
+@bot.middleware_handler(update_types=['message'])
+def authorizeCommand(bot_instance, message):
+    if chatId or chatId != message.chat.id:
+        message.text = '/error'
+
+@bot.message_handler(commands=['error'])
+def error(message):
+    bot.send_message(chat_id=message.chat.id, text='Unauthorized access')
 
 @bot.message_handler(commands=['all'])
 def getAllCoins(message):
@@ -26,13 +43,8 @@ def addNewCoin(message):
     assets = getAssets(coins, helper)
 
 def boughtCoinNotification(asset: Asset):
-    chatId = ''
-    with open(settingsPath) as json_file:
-        chatId = json.load(json_file)['TelegramChatId']
-    if chatId is None or chatId == '':
-        print('Empty TelegramChatId, so how am I supposed to notify you?')
-        return
-    message = f'''{datetime.date.today().strftime("%d-%B-%Y")}
+    message = f'''🚀 🚀 🚀 
+    {datetime.date.today().strftime("%d-%B-%Y")}
     Picked {asset.crypto} with min: {asset.orderMin} for {asset.currentPrice}€
     Spend {asset.getPrice()}€'''
     bot.send_message(chatId, message)

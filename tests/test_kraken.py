@@ -1,7 +1,5 @@
 import unittest 
 from unittest.mock import MagicMock
-
-import krakenex
 from src.services.kraken import KrakenHelper, getAssets, Asset
 
 class TestAsset(unittest.TestCase):
