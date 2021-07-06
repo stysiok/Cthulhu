@@ -1,6 +1,6 @@
 import json, random, os
 from services.kraken import getAssets, KrakenHelper
-from services.telegram import boughtCoinNotification
+from services.telegram_notifications import boughtCoinNotification
 
 krakenHelper = KrakenHelper()
 settingsPath = 'settings.json' if os.getenv('SETTINGS_PATH') == None else os.getenv('SETTINGS_PATH')
