@@ -30,6 +30,10 @@ class KrakenHelper:
     def getAffordable(self, budget: float, assets: Iterable[Asset]) -> Sequence[Asset]:
         return list(filter(lambda a: a.getPrice() < budget, assets))
     
+    def checkAsset(self, assetName: str) -> bool:
+        result = self.api.query_public(f'Asset?asset={assetName}')
+        return 'result' in result
+    
     def getMinBuys(self, assets: Iterable[Asset]):
         pairs = self.__assetsToPair(assets)
         result = self.api.query_public(f'AssetPairs?pair={pairs}')['result']

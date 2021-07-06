@@ -1,4 +1,4 @@
-import os, re, datetime, json
+import os, datetime, json
 import telebot
 from telebot import apihelper
 from kraken import KrakenHelper, Asset, getAssets
@@ -22,7 +22,7 @@ bot = telebot.TeleBot(token, parse_mode=None)
 
 @bot.middleware_handler(update_types=['message'])
 def authorizeCommand(bot_instance, message):
-    if chatId or chatId != message.chat.id:
+    if chatId != message.chat.id:
         message.text = '/error'
 
 @bot.message_handler(commands=['error'])
@@ -38,9 +38,19 @@ def getAllCoins(message):
     
 @bot.message_handler(commands=['add'])
 def addNewCoin(message):
-    text = message.text.replace('add ', '')
-    coins = re.search('(.+?)(?:,|$)', text)
-    assets = getAssets(coins, helper)
+    coinsToAdd = set(message.text[5:].split(','))
+    coins = []
+    with open(settingsPath) as json_file:
+        coins = json.load(json_file)["Coins"]
+    alreadyAddedCoins = set(filter(lambda c: c in coins, coinsToAdd))
+    newCoins = set(coinsToAdd - alreadyAddedCoins)
+    validCoins = set(filter(lambda c: helper.checkAsset(c), newCoins))
+    invalidCoins = list(newCoins - validCoins)
+    assets = getAssets(validCoins, helper)
+    pass
+
+    
+    # bot.reply_to(message, )
 
 def boughtCoinNotification(asset: Asset):
     message = f'''🚀 🚀 🚀 
