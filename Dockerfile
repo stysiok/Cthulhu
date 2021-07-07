@@ -5,6 +5,7 @@ COPY . .
 COPY scripts/run.sh scripts/run
 
 ENV KRAKEN_KEY_PATH='/app/kraken.key' 
+ENV TELEGRAM_KEY_PATH='/app/telegram.key' 
 ENV SETTINGS_PATH='/app/settings.json'
 
 RUN sh scripts/requirements.sh 
