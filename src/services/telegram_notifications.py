@@ -19,9 +19,10 @@ bot = telebot.TeleBot(token, parse_mode=None)
 
 def boughtCoinNotification(asset: Asset):
     roundedCurrentPrice = "{:.2f}".format(asset.currentPrice)
+    spend = "{:.2f}".format(asset.getPrice())
     message = f'''🚀 🚀 🚀 
 {datetime.date.today().strftime("%d-%B-%Y")}
 Picked {asset.crypto} 
 {asset.orderMin} for {roundedCurrentPrice}€
-Spend {asset.getPrice()}€'''
+Spend {spend}€'''
     bot.send_message(chatId, message)
