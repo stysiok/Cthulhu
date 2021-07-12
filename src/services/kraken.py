@@ -31,7 +31,7 @@ class KrakenHelper:
         return list(filter(lambda a: a.getPrice() < budget, assets))
     
     def checkAsset(self, assetName: str) -> bool:
-        result = self.api.query_public(f'Asset?asset={assetName}')
+        result = self.api.query_public(f'Assets?asset={assetName}')
         return 'result' in result
     
     def getMinBuys(self, assets: Iterable[Asset]):
