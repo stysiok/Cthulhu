@@ -1,7 +1,7 @@
 import os, json
 import telebot
 from telebot import apihelper
-from kraken import KrakenHelper, getAssets
+from kraken import KrakenHelper
 
 telegramKeyPath = 'telegram.key' if os.getenv('TELEGRAM_KEY_PATH') == None else os.getenv('TELEGRAM_KEY_PATH')
 settingsPath = 'settings.json' if os.getenv('SETTINGS_PATH') == None else os.getenv('SETTINGS_PATH')

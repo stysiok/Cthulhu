@@ -1,0 +1,15 @@
+---
+version: "3.9"
+
+services:
+    cthulhu:
+        image: cthulhu:latest
+        volumes: 
+            - settings:/app/settings/
+    telegram-bot:
+        image: cthulhu:tg-latest
+        volumes: 
+            - settings:/app/settings/
+
+volumes:
+    settings:

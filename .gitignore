@@ -133,3 +133,4 @@ kraken.key
 telegram.key
 settings.json
 .vscode/launch.json
+deployment.tar.gz
